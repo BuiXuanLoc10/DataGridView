@@ -80,7 +80,6 @@ namespace SearchSP
             //int id = int.Parse(txtMaNV.Text);
             try
             {
-               
                 SqlCommand cmd = new SqlCommand("DeleteNhanVien", cnn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 //cmd.Parameters.Add("@MaNV", id);
@@ -97,11 +96,6 @@ namespace SearchSP
             {
                 DisConnect();
             }
-        }
-
-        private void txtMaNV_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void btTimKiem_Click(object sender, EventArgs e)
