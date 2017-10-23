@@ -1,0 +1,131 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+using System.Configuration;
+
+namespace SearchSP
+{
+    public partial class frmSearchSP : Form
+    {
+        SqlConnection cnn = null;   
+        public frmSearchSP()
+        {
+            InitializeComponent();
+        }
+
+        private void frmSearchSP_Load(object sender, EventArgs e)
+        {
+            string cnnStr = "Server = .; Database = QLBanHang; Integrated Security = true;";
+            //System.Configuration.ConfigurationManager.ConnectionStrings["QLBanHang"].ConnectionString;
+            cnn = new SqlConnection(cnnStr);
+            DataTable dt = new DataTable();
+            dt = GetData();
+            dGVProduct.DataSource = dt;
+            txtMaNV.DataBindings.Add("Text", dt, "MaNV");
+            txtSearch.DataBindings.Add("Text", dt, "MaNV");
+        }
+        
+        private void Connect()
+        {
+            try
+            {
+                if (cnn != null && cnn.State == ConnectionState.Closed)
+                {
+                    cnn.Open();
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        
+        private void DisConnect()
+        {
+            if (cnn != null && cnn.State == ConnectionState.Open)
+            {
+                cnn.Close();
+            }
+        }
+
+        private DataTable GetData()
+        {
+            string strsql = "SELECT * FROM NhanVien";
+            DataTable dt = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter(strsql, cnn);
+            da.Fill(dt);
+            return dt;
+        }
+        
+        private DataTable GetData(string strsql)
+        {
+            DataTable dt = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter(strsql, cnn);
+            int count;
+            count = da.Fill(dt);
+            if (count == 0)
+                MessageBox.Show("Không tìm thấy");
+            return dt;
+        }
+        
+        private void btXoa_Click(object sender, EventArgs e)
+        {
+            Connect();
+            //int id = int.Parse(txtMaNV.Text);
+            try
+            {
+               
+                SqlCommand cmd = new SqlCommand("DeleteNhanVien", cnn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                //cmd.Parameters.Add("@MaNV", id);
+                cmd.Parameters.AddWithValue("@MaNV", txtMaNV.Text);
+                cmd.ExecuteNonQuery();
+                cmd.ExecuteReader();
+                MessageBox.Show("Đã Xóa Thành Công", "Thông báo");
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                DisConnect();
+            }
+        }
+
+        private void txtMaNV_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btTimKiem_Click(object sender, EventArgs e)
+        {
+            string Search = txtSearch.Text + "%";
+            DataTable dt = new DataTable();
+            if (rbMaNV.Checked == true)
+            {
+                string strsql = "SELECT *FROM [QLBanHang].[dbo].[Nhanvien] WHERE MANV LIKE N'" + Search + "'";
+                dt = GetData(strsql);
+                dGVProduct.DataSource = dt;
+            }
+            if (rbHoNV.Checked == true)
+            {
+                string strsql = "SELECT *FROM [QLBanHang].[dbo].[Nhanvien] WHERE HoNV LIKE N'" + Search + "'";
+                dt = GetData(strsql);
+                dGVProduct.DataSource = dt;
+            }
+            if (rbTenNV.Checked == true)
+            {
+                string strsql = "SELECT *FROM [QLBanHang].[dbo].[Nhanvien] WHERE Ten LIKE N'" + Search + "'";
+                dt = GetData(strsql);
+                dGVProduct.DataSource = dt;
+            }
+        }
+    }
+}
