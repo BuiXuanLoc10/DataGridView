@@ -11,7 +11,7 @@ using System.Configuration;
 
 namespace SearchSP
 {
-    public partial class frmSearchSP : Form
+    public partial class frmSearchSP:Form
     {
         SqlConnection cnn = null;   
         public frmSearchSP()
@@ -36,9 +36,7 @@ namespace SearchSP
             try
             {
                 if (cnn != null && cnn.State == ConnectionState.Closed)
-                {
                     cnn.Open();
-                }
             }
             catch (SqlException ex)
             {
@@ -49,9 +47,7 @@ namespace SearchSP
         private void DisConnect()
         {
             if (cnn != null && cnn.State == ConnectionState.Open)
-            {
                 cnn.Close();
-            }
         }
 
         private DataTable GetData()
@@ -78,6 +74,7 @@ namespace SearchSP
         {
             Connect();
             //int id = int.Parse(txtMaNV.Text);
+            //cmd.Parameter.Add(@MaNV, id)
             try
             {
                 SqlCommand cmd = new SqlCommand("DeleteNhanVien", cnn);
