@@ -13,12 +13,11 @@ using System.Data.OleDb;
 
 namespace TraCuuSP
 {
-    public partial class frmTraCuuSP : Form
+    public partial class frmTraCuuSP:Form
     {
         SqlCommand cmd;
         string str;
         SqlConnection cn = null;
-        
         public frmTraCuuSP()
         {
             InitializeComponent();
@@ -31,7 +30,7 @@ namespace TraCuuSP
             Connect();
             List<object> list = getData();
             dgvProduct.DataSource = list;
-                
+            //BindingSource
             //BindingSource bs = new BindingSource();
             txtMaLoai.DataBindings.Add("Text", list, "MaLoaiSP");
             txtTenLoai.DataBindings.Add("Text", list, "TenLoaiSP");
@@ -42,9 +41,7 @@ namespace TraCuuSP
             try 
             {
                 if (cn.State != ConnectionState.Open)
-                {
                     cn.Open();
-                }
             }
             catch (InvalidOperationException ex)
             {
@@ -59,10 +56,7 @@ namespace TraCuuSP
         void Disconnect()
         {
             if (cn.State != ConnectionState.Closed)
-            {
                 cn.Close();
-            }
-
         }
 
         private List<Object> getData()
@@ -99,6 +93,7 @@ namespace TraCuuSP
             }
             return list;
         }
+        //Button_Click Delete, Insert, Update
         
         private void Xoa_Click(object sender, EventArgs e)
         {
@@ -141,6 +136,5 @@ namespace TraCuuSP
             Disconnect();
             MessageBox.Show("Đã Sửa thành công", "Thông báo");
         }
-
     }
 }
