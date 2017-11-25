@@ -57,9 +57,7 @@ namespace GridView
         }
         private List<object> GetData()
         {
-
             Connect();
-
             string sql = "SELECT * FROM SanPham";
             List<object> list = new List<object>();
             try
@@ -88,7 +86,6 @@ namespace GridView
                     list.Add(poor);
                 }
                 dr.Close();
-
             }
             catch (SqlException ex)
             {
