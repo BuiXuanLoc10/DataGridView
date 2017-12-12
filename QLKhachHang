@@ -1,0 +1,139 @@
+# DataGridView
+
+namespace WindowsFormsApplication1
+{
+    public partial class QLKhachHang : Form
+    {   
+        SqlConnection cnn = null;
+        public QLKhachHang()
+        {
+            InitializeComponent();
+        }
+
+        private void Customers_Load(object sender, EventArgs e)
+        {
+            string cnStr = "Server = .; Database = QLBanHang; Integrated Security = true;";
+            cnn = new SqlConnection(cnStr);
+            List<object> list = GetData();
+            dGV.DataSource = list;
+            //Tên cột hàng thứ 3 là Tên cột hiện thị dataGridView
+            txtCustomerID.DataBindings.Add("Text", list, "CustomerID");
+            txtAddress.DataBindings.Add("Text", list, "Address");
+            txtPhone.DataBindings.Add("Text", list, "Phone");
+        }
+        private void Connect()
+        {
+            try
+            {
+                if (cnn.State != ConnectionState.Open)
+                {
+                    cnn.Open();
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            catch (ConfigurationException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        private void DisConnect()
+        {
+            if (cnn.State != ConnectionState.Closed)
+            {
+                cnn.Close();
+            }
+        }
+        private List<object> GetData()
+        {
+            Connect();
+            string sql = "SELECT MaKH, DiaChi, DienThoai FROM KhachHang";
+            List<object> list = new List<object>();
+            try
+            {
+                SqlCommand cmd = new SqlCommand(sql, cnn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                string MaKH;
+                string DiaChi;
+                string DienThoai;
+                while (dr.Read())
+                {
+                    MaKH = dr.GetString(0);
+                    DiaChi = dr.GetString(1);
+                    DienThoai = dr.GetString(2);
+                    var KH = new
+                    {
+                        CustomerID = MaKH,
+                        Address = DiaChi,
+                        Phone = DienThoai
+                    };
+                    list.Add(KH);
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                DisConnect();
+            }
+            return list;
+        }
+
+        private void btAdd_Click(object sender, EventArgs e)
+        {
+            Connect();
+            string MaKh = txtCustomerID.Text;
+            string DiaChi = txtAddress.Text;
+            string DienThoai = txtPhone.Text;
+            string sql = "INSERT INTO KhachHang(MaKH, DiaChi, DienThoai) VALUES (" + "'" + MaKh + "', '" + DiaChi + "', '" + DienThoai + "')";
+            SqlCommand cmd = new SqlCommand(sql, cnn);
+            cmd.CommandType = CommandType.Text;
+            cmd.ExecuteNonQuery();
+            dGV.DataSource = GetData();
+            DisConnect();
+            MessageBox.Show("Them Thanh Cong!", "Thong Bao.");
+        }
+
+        private void btDel_Click(object sender, EventArgs e)
+        {
+            Connect();
+            string MaKh = txtCustomerID.Text;
+            string sql = "DELETE FROM KhachHang Where MaKH = '" + MaKh + "'";
+            SqlCommand cmd = new SqlCommand(sql, cnn);
+            cmd.CommandType = CommandType.Text;
+            cmd.ExecuteNonQuery();
+            dGV.DataSource = GetData();
+            DisConnect();
+            MessageBox.Show(" Xoá thành công!", " Thông báo.");
+        }
+
+        private void btUpd_Click(object sender, EventArgs e)
+        {
+            //Update DiaChi, DienThoai theo MaKH
+            Connect();
+            string MaKh = txtCustomerID.Text;
+            string DiaChi = txtAddress.Text;
+            string DienThoai = txtPhone.Text;
+            string sql = "UPDATE KhachHang SET DiaChi = " + "'" + DiaChi + "'" + ",DienThoai = " + "'" + DienThoai + "'" + "Where MaKH = '" + MaKh + "'";
+            SqlCommand cmd = new SqlCommand(sql, cnn);
+            cmd.CommandType = CommandType.Text;
+            cmd.ExecuteNonQuery();
+            dGV.DataSource = GetData();
+            DisConnect();
+            MessageBox.Show(" Cập nhật thành công!", " Thông báo.");
+        }
+
+        private void btExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+    }
+}
