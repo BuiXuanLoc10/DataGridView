@@ -1,5 +1,12 @@
 # DataGridView
 
+
+
+
+
+
+
+
 namespace ConnectionDatabase
 {
     public partial class ConnectToServer : Form
